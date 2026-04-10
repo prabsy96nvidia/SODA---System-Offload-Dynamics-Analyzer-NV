@@ -35,6 +35,10 @@ GPU_SPECS: Dict[str, Dict[str, float]] = {
     # Blackwell workstation — RTX 6000 Blackwell (96 GB GDDR7, 600 W TDP)
     # FP16 Tensor (dense) = 2× FP32 CUDA (125 TFLOPS); same multiplier as RTX 6000 Ada.
     "RTX 6000 Blackwell": {"peak_tflops_fp16": 250.0, "peak_bw_tb_s": 1.792},
+    # Blackwell laptop — RTX 5050 (GB207, 8 GB GDDR7, 128-bit, 130 W TDP)
+    # FP16 dense: 20 SMs × 256 ops/SM/clock × 3.09 GHz boost = 15.82 TFLOPS
+    # Mem BW: 10001 MT/s × 2 (DDR) × 128-bit bus / 8 = 320 GB/s
+    "RTX 5050": {"peak_tflops_fp16": 15.82, "peak_bw_tb_s": 0.320},
     # Blackwell data-center — B200 SXM5 (192 GB HBM3e, 8.0 TB/s, 1000 W TDP)
     "B200 SXM": {"peak_tflops_fp16": 2250.0, "peak_bw_tb_s": 8.0},
     # GB200 NVL — per-GPU spec in NVLink fabric (same die as B200 SXM)
@@ -45,6 +49,7 @@ GPU_SPECS: Dict[str, Dict[str, float]] = {
 _GPU_PATTERNS: List[Tuple[re.Pattern, str]] = [
     # Blackwell — match before any generic H/A patterns
     (re.compile(r"RTX\s*6000.*Blackwell", re.IGNORECASE), "RTX 6000 Blackwell"),
+    (re.compile(r"RTX\s*5050", re.IGNORECASE), "RTX 5050"),
     (re.compile(r"GB200.*NVL|NVL.*GB200", re.IGNORECASE), "GB200 NVL"),
     (re.compile(r"B200.*SXM|B200", re.IGNORECASE), "B200 SXM"),
     # Hopper

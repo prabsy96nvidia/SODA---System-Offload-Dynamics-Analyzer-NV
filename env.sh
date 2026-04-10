@@ -44,12 +44,32 @@ export ENV_METADATA="env_metadata.json"
 # Experiment directory (set by tracer, DO NOT set manually)
 export EXPERIMENT_DIR=""
 
-# HuggingFace cache (set default if not already set)
-# export HF_HOME="${HF_HOME:-/tmp/hf_cache_$USER}"
-export HF_HOME="/scratch/$USER/hf_cache"
+# HuggingFace cache — stored under user home (writable on this machine)
+# Set unconditionally so a stale /scratch value from a prior shell is overridden.
+export HF_HOME="$HOME/.cache/huggingface"
+
+# HuggingFace token — required for gated models (Llama, etc.)
+# Set HF_TOKEN in your shell before sourcing, or add it to ~/.bashrc:
+#   export HF_TOKEN="hf_..."
+export HF_TOKEN="${HF_TOKEN:-}"
+if [ -z "${HF_TOKEN:-}" ] && [ -f "$HOME/.hf_token" ]; then
+    export HF_TOKEN="$(cat "$HOME/.hf_token")"
+fi
 
 # Python path setup for imports (safe under `set -u` when PYTHONPATH is unset)
 export PYTHONPATH="$SODA_SRC${PYTHONPATH:+:$PYTHONPATH}"
+
+# NICC CLI — NVIDIA Intelligent Coding Companion
+# On NVIDIA farm/VNC the binary is preinstalled at /home/nv/utils/nicc-cli/latest.
+# On a local machine, nicc is installed under ~/.local/bin via setup_nicc.sh.
+_NICC_FARM="/home/nv/utils/nicc-cli/latest"
+_NICC_LOCAL="$HOME/.local/bin"
+if [ -f "$_NICC_FARM/nicc" ]; then
+    export PATH="$_NICC_FARM:$PATH"
+elif [ -f "$_NICC_LOCAL/nicc" ]; then
+    export PATH="$_NICC_LOCAL:$PATH"
+fi
+unset _NICC_FARM _NICC_LOCAL
 
 # ============================================================
 # Microbench paths
